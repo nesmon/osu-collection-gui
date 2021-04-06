@@ -116,3 +116,6 @@ dist
 .pnp.*
 
 *.db
+
+.idea/
+osu-collection-creation/.idea
