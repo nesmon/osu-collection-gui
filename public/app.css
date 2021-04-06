@@ -1,0 +1,90 @@
+body {
+    /*margin: 10px;*/
+    background-color: #241B2F;
+    color: #8678AB;
+}
+
+.show{
+    -webkit-animation: fadein 2s;
+}
+
+.unshow{
+    -webkit-animation: fadeout 2s;
+}
+
+.notification{
+    color: white;
+    display: none;
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #66ff2f;
+    border-radius: 10px;
+    padding: 3px 25px;
+}
+
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-webkit-keyframes fadeout {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+.osuApiKey {
+    color: #8678AB;
+    width: 98%;
+    height: 5vh;
+    border: 2px solid #8678AB;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.fileNameInput {
+    color: #8678AB;
+    width: 98%;
+    height: 5vh;
+    border: 2px solid #8678AB;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.idInput {
+    color: #8678AB;
+    resize: none;
+    width: 98%;
+    height: 60vh;
+    border: 2px solid #8678AB;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.sendRequest {
+    margin-top: 5px;
+    color: #8678AB;
+    width: 100%;
+    height: 10vh;
+    border: 2px solid #8678AB;
+    border-radius: 5px;
+    position: relative;
+}
+
+.sendRequest {
+    font-size: 20px;
+    width: 99.5%;
+    height: 10vh;
+    vertical-align: baseline;
+    background-image: url("./background.svg");
+    background-size: cover;
+    background-repeat: repeat;
+    background-color: rgba(58, 39, 96, 0.5);
+    transition: all 1s;
+}
+
+.sendRequest:hover{
+    background-position: center;
+    background-color: rgba(58, 39, 96, 0.1);
+}

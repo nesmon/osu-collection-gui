@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Osu Collection GUI</title>
+    <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+
+<div class="notification" id="notification">
+    <span id="message"></span>
+</div>
+
+
+<input type="text" class="osuApiKey" id="osuApiKey" placeholder="Set your api key here">
+<br>
+<br>
+<input type="text" class="fileNameInput" id="fileName" placeholder="Name of the new collection file">
+<br>
+<br>
+<textarea class="idInput" id="idInput" placeholder="Place your beatmap id or md5hash"></textarea>
+<input type="checkbox" id="isMD5" name="isMD5">
+<label for="isMD5">Is MD5 hash ?</label>
+
+<button onclick="sendRequest()" class="sendRequest" id="sendRequest">Create your collection</button>
+
+<script>
+    const {ipcRenderer} = require('electron')
+
+    ipcRenderer.on('responseRequest', (event, arg, message) => {
+        if (arg === false) {
+            document.getElementById("notification").classList.add("show")
+            document.getElementById("notification").style.display = "block"
+            document.getElementById("notification").style.backgroundColor = "#FA5151"
+            document.getElementById("message").innerHTML = message
+
+            setTimeout(()=> {
+                document.getElementById("notification").classList.remove("show")
+                document.getElementById("notification").classList.add("unshow")
+                setTimeout(()=>{
+                    document.getElementById("notification").style.display = "none"
+                }, 1500)
+            }, 3000)
+
+        }else{
+            document.getElementById("notification").classList.add("show")
+            document.getElementById("notification").style.display = "block"
+            document.getElementById("notification").style.backgroundColor = "#429b03"
+            document.getElementById("message").innerHTML = message
+
+            setTimeout(()=> {
+                document.getElementById("notification").classList.remove("show")
+                document.getElementById("notification").classList.add("unshow")
+                setTimeout(()=>{
+                    document.getElementById("notification").style.display = "none"
+                }, 1500)
+            }, 3000)
+        }
+
+        document.getElementById("sendRequest").removeAttribute("disabled", "")
+        document.getElementById("sendRequest").style.borderColor = "#8678AB"
+    })
+
+    function sendRequest() {
+        let apiKey = document.getElementById("osuApiKey").value
+        let fileName = document.getElementById("fileName").value
+        let idInput = document.getElementById("idInput").value.split("\n")
+        let isMD5 = document.getElementById("isMD5").checked
+
+        document.getElementById("sendRequest").setAttribute("disabled", "")
+        document.getElementById("sendRequest").style.borderColor = "red"
+        ipcRenderer.send('creationRequest', apiKey, fileName, idInput, isMD5)
+    }
+</script>
+</body>
+</html>
