@@ -2,16 +2,21 @@ const nodesu = require("nodesu")
 const varint = require("varint")
 const fs = require("fs")
 const EventEmitter = require("events")
+const {ipcMain} = require('electron')
+
+
 
 class OsuWriter extends EventEmitter {
 
     /**
      * @param {String} osuApiKey - Your osu API Key
      * */
-    constructor(osuApiKey = null) {
+    constructor(osuApiKey = null, mainWindow, db) {
         super()
         if (!osuApiKey) return console.log("Please set your osu api key!")
 
+        this.window = mainWindow
+        this.db = db
         this.osu = new nodesu.Client(osuApiKey)
     }
 
@@ -22,7 +27,7 @@ class OsuWriter extends EventEmitter {
      * @param {Array} mapID - List of mapID would like put on your collection
      * @param {Boolean} md5ID - Say if mapID is a already a md5 list or not
      * */
-    async createCollection(filePath=null, mapID = null, isMD5 = false) {
+    async createCollection(filePath = null, mapID = null, isMD5 = false) {
         let mapNumber = mapID.length;
         let arrayMap;
         let hexArray = [];
@@ -36,9 +41,18 @@ class OsuWriter extends EventEmitter {
         } else {
             arrayMap = [];
             for (let i = 0; i < mapNumber; i++) {
-                let getMD5 = await this.osu.beatmaps.getByBeatmapId(mapID[i]);
-                arrayMap.push(getMD5[0].file_md5);
-                console.log("hello")
+
+                const result = await this.query(this.db, `SELECT md5_hash FROM md5Maps WHERE beatmapID = ${mapID[i]}`);
+
+                if (result.length >= 1) {
+                    arrayMap.push(result[0].md5_hash);
+                } else if (result.length === 0) {
+                    let getMD5 = await this.osu.beatmaps.getByBeatmapId(mapID[i]);
+                    arrayMap.push(getMD5[0].file_md5);
+                    this.db.run(`INSERT INTO md5Maps VALUES (?, "${getMD5[0].file_md5}", ${mapID[i]})`)
+                }
+
+                this.window.webContents.send("md5", i);
             }
         }
 
@@ -63,6 +77,18 @@ class OsuWriter extends EventEmitter {
         fs.writeFileSync(filePath, Buffer.concat([osuVer, numCol, collectionName, mapsNumber, beatmapHash]))
 
         return "Collection creation is done !"
+    }
+
+    query(database, userQuery) {
+        return new Promise((resolve, reject) => {
+
+            database.all(userQuery, async (error, results) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(results);
+            })
+        });
     }
 }
 

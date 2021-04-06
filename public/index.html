@@ -10,9 +10,7 @@
 <div class="notification" id="notification">
     <span id="message"></span>
 </div>
-
-
-<input type="text" class="osuApiKey" id="osuApiKey" placeholder="Set your api key here">
+<input type="password" class="osuApiKey" id="osuApiKey" placeholder="Set your api key here">
 <br>
 <br>
 <input type="text" class="fileNameInput" id="fileName" placeholder="Name of the new collection file">
@@ -27,11 +25,15 @@
 <script>
     const {ipcRenderer} = require('electron')
 
+    ipcRenderer.on('md5', (event, arg) => {
+        document.getElementById("sendRequest").innerText = arg + 1 + "/" + document.getElementById("idInput").value.split("\n").length
+    })
+
     ipcRenderer.on('responseRequest', (event, arg, message) => {
         if (arg === false) {
             document.getElementById("notification").classList.add("show")
             document.getElementById("notification").style.display = "block"
-            document.getElementById("notification").style.backgroundColor = "#FA5151"
+            document.getElementById("notification").style.backgroundColor = "#fa5151"
             document.getElementById("message").innerHTML = message
 
             setTimeout(()=> {
@@ -47,10 +49,12 @@
             document.getElementById("notification").style.display = "block"
             document.getElementById("notification").style.backgroundColor = "#429b03"
             document.getElementById("message").innerHTML = message
+            document.getElementById("sendRequest").innerText = "Done !"
 
             setTimeout(()=> {
                 document.getElementById("notification").classList.remove("show")
                 document.getElementById("notification").classList.add("unshow")
+                document.getElementById("sendRequest").innerText = "Create your collection"
                 setTimeout(()=>{
                     document.getElementById("notification").style.display = "none"
                 }, 1500)

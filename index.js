@@ -3,8 +3,12 @@ require('v8-compile-cache')
 const osuCollection = require("./osu-collection-creation/app")
 const {app, BrowserWindow, ipcMain} = require('electron')
 const nodesu = require("nodesu")
+const sqlite3 = require('sqlite3').verbose();
+const pathDB = `${__dirname}/osu-collection-creation/collection.db`.replace('app.asar', 'app.asar.unpacked');
+const db = new sqlite3.Database(pathDB);
 let mainWindow
 
+console.log(require('os').homedir());
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -28,8 +32,8 @@ function createWindow() {
             return event.reply("responseRequest", false, "Please Give a valid API key !", isMD5)
         }
 
-        const osuWrite = new osuCollection(api);
-        osuWrite.createCollection(`./${name}.db`, value, false).then((data) => {
+        const osuWrite = new osuCollection(api, mainWindow, db);
+        osuWrite.createCollection(`${require('os').homedir()}\\${name}.db`, value, false).then((data) => {
             event.reply("responseRequest", true, "Collection created !")
         })
     })
